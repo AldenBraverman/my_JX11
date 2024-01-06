@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include <JuceHeader.h>
+#include <JuceHeader.h> // necessary to pull in all JUCE modules
 
 //==============================================================================
 /**
 */
-class My_JX11AudioProcessor  : public juce::AudioProcessor
+class My_JX11AudioProcessor  : public juce::AudioProcessor // My_JX11AudioProcessor class extends juce::AudioProcessor
 {
 public:
     //==============================================================================
