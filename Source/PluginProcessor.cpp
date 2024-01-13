@@ -13,7 +13,7 @@
 My_JX11AudioProcessor::My_JX11AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
+                     #if ! JucePlugin_IsMidiEffect // conditionals corresponding to options from the Projucer - defines can be found in JUCE Library Code/JucePluginDefines.h
                       #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                       #endif
@@ -129,7 +129,7 @@ bool My_JX11AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
-void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -144,18 +144,33 @@ void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
+    splitBufferByEvents(buffer, midiMessages);
+    /*
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     // Make sure to reset the state if your inner loop is processing
     // the samples and the outer loop is handling the channels.
     // Alternatively, you can process the samples with the channels
     // interleaved by keeping the same state.
+    
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
         auto* channelData = buffer.getWritePointer (channel);
 
         // ..do something to the data...
     }
+    
+    
+    for (const auto metadata : midiMessages) {
+        // if this is a Note On event, start the note
+        // if this is a Note Off event, stop the note
+    }
+    
+    for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+        // output audio for the playing notes
+    }
+     */
+    
 }
 
 //==============================================================================
@@ -182,6 +197,54 @@ void My_JX11AudioProcessor::setStateInformation (const void* data, int sizeInByt
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
 }
+
+//==============================================================================
+// Split AudioBuffer into smaller pieces manage timing of MIDI messages
+// Juce automatically sorts MIDI messages by their timestamp
+void My_JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer,
+                                                juce::MidiBuffer &midiMessages)
+{
+    //
+    int bufferOffset = 0;
+    
+    for (const auto metadata : midiMessages) { // For every MIDI event in midiMessages
+        // Render the audio that happens before this event (if any)
+        int samplesThisSegment = metadata.samplePosition - bufferOffset; // metadata.samplePosition = midi timestamp
+        if (samplesThisSegment > 0) {
+            render(buffer, samplesThisSegment, bufferOffset); // Process audio up to this event's timestamp
+            bufferOffset += samplesThisSegment;
+        }
+        
+        // Manage the midi event, also ignore 'sysex' MIDI messages
+        if(metadata.numBytes <= 3) {
+            uint8_t data1 = (metadata.numBytes >= 2) ? metadata.data[1] : 0;
+            uint8_t data2 = (metadata.numBytes == 3) ? metadata.data[2] : 0;
+            handleMIDI(metadata.data[0], data1, data2);
+        }
+        
+    }
+    
+    // Render the audio after the last MIDI event - if there were no MIDI events at all, render the entire buffer
+    int samplesLastSegment = buffer.getNumSamples() - bufferOffset;
+    if (samplesLastSegment > 0) {
+        render(buffer, samplesLastSegment, bufferOffset);
+    }
+    
+    midiMessages.clear();
+}
+
+void My_JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
+{
+    char s[16];
+    snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
+    DBG(s);
+}
+
+void My_JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)
+{
+    // do nothing yet
+}
+
 
 //==============================================================================
 // This creates new instances of the plugin..
