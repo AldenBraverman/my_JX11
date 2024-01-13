@@ -12,6 +12,9 @@
       <FILE id="pEc9pS" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="OlkgMx" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="hFfJkE" name="Synth.cpp" compile="1" resource="0" file="Source/Synth.cpp"/>
+      <FILE id="gkpfIP" name="Synth.h" compile="0" resource="0" file="Source/Synth.h"/>
+      <FILE id="V1oN74" name="Voice.h" compile="0" resource="0" file="Source/Voice.h"/>
     </GROUP>
   </MAINGROUP>
   <MODULES>

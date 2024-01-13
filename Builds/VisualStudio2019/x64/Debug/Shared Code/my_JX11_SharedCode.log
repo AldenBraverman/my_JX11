@@ -1,28 +1,19 @@
 ﻿  PluginProcessor.cpp
   PluginEditor.cpp
-  include_juce_audio_basics.cpp
-  include_juce_audio_devices.cpp
-  include_juce_audio_formats.cpp
-  include_juce_audio_plugin_client_ARA.cpp
-  include_juce_audio_processors_ara.cpp
-  include_juce_audio_processors_lv2_libs.cpp
-  include_juce_audio_utils.cpp
-  include_juce_data_structures.cpp
-  include_juce_events.cpp
-  include_juce_graphics.cpp
-  include_juce_gui_extra.cpp
+  Synth.cpp
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(33,47): warning C4100: 'sampleCount': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(33,28): warning C4100: 'outputBuffers': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,63): warning C4100: 'data2': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,48): warning C4100: 'data1': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,33): warning C4100: 'data0': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(80,52): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(84,63): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(89,79): warning C4100: 'newName': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(89,52): warning C4100: 'index': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(94,67): warning C4100: 'samplesPerBlock': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(94,51): warning C4100: 'sampleRate': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(132,95): warning C4100: 'midiMessages': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(155,15): warning C4189: 'channelData': local variable is initialized but not referenced
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(173,69): warning C4100: 'destData': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(180,72): warning C4100: 'sizeInBytes': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(180,62): warning C4100: 'data': unreferenced formal parameter
-  include_juce_audio_processors.cpp
-  include_juce_core.cpp
-  include_juce_gui_basics.cpp
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(190,69): warning C4100: 'destData': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(197,72): warning C4100: 'sizeInBytes': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(197,62): warning C4100: 'data': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,91): warning C4100: 'bufferOffset': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,74): warning C4100: 'sampleCount': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,62): warning C4100: 'buffer': unreferenced formal parameter
   my_JX11_SharedCode.vcxproj -> C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\Shared Code\my_JX11.lib

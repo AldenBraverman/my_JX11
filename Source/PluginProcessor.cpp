@@ -90,17 +90,25 @@ void My_JX11AudioProcessor::changeProgramName (int index, const juce::String& ne
 {
 }
 
+void My_JX11AudioProcessor::reset()
+{
+    synth.reset();
+}
+
 //==============================================================================
 void My_JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
+    synth.allocateResources(sampleRate, samplesPerBlock); // lets Synth object react to changes in sample rate or maximum block size
+    reset();
 }
 
 void My_JX11AudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    synth.deallocateResources(); // lets Synth object react to changes in sample rate or maximum block size
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -235,16 +243,17 @@ void My_JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer
 
 void My_JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
 {
-    char s[16];
-    snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
-    DBG(s);
+    // Print midi message
+    // char s[16];
+    // snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
+    // DBG(s);
+    synth.midiMessage(data0, data1, data2); // passes midi message to the Synth class
 }
 
 void My_JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)
 {
     // do nothing yet
 }
-
 
 //==============================================================================
 // This creates new instances of the plugin..
