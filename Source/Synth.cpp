@@ -9,6 +9,7 @@
 */
 
 #include "Synth.h"
+#include "Utils.h"
 
 Synth::Synth()
 {
@@ -48,6 +49,9 @@ void Synth::render(float** outputBuffers, int sampleCount)
             // Noise value multiplied by velocity
             output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
         }
+
+        protectYourEars(outputBufferLeft, sampleCount);
+        protectYourEars(outputBufferRight, sampleCount);
 
         // Write output value into audio buffers with mono/stereo logic
         outputBufferLeft[sample] = output;
