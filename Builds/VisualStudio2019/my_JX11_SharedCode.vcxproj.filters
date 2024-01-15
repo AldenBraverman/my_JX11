@@ -3036,6 +3036,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Utils.h">
+      <Filter>my_JX11\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\NoiseGenerator.h">
+      <Filter>my_JX11\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
       <Filter>my_JX11\Source</Filter>
     </ClInclude>

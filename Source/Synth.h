@@ -11,7 +11,8 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Voice.h"
+#include "Voice.h" // import Voice class
+#include "NoiseGenerator.h" // import NoiseGenerator class
 
 class Synth // Synth has methods to reset its state, render current block of audio, and to manage MIDI messages
 {
@@ -26,7 +27,8 @@ public:
 
 private:
     float sampleRate;
-    Voice voice;
+    Voice voice; // Set up Voice class
     void noteOn(int note, int velocity);
     void noteOff(int note);
+    NoiseGenerator noiseGen; // Set up NoiseGenerator class
 };

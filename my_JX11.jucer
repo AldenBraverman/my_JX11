@@ -5,6 +5,9 @@
               companyName="Alden Braverman" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="jj8tt0" name="my_JX11">
     <GROUP id="{BF4D85F3-1572-11C7-2AA3-98CF9C1ED3E0}" name="Source">
+      <FILE id="MvNCLZ" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>
+      <FILE id="OkUoe9" name="NoiseGenerator.h" compile="0" resource="0"
+            file="Source/NoiseGenerator.h"/>
       <FILE id="DYzYrJ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="vF50xK" name="PluginProcessor.h" compile="0" resource="0"

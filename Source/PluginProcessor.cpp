@@ -90,10 +90,6 @@ void My_JX11AudioProcessor::changeProgramName (int index, const juce::String& ne
 {
 }
 
-void My_JX11AudioProcessor::reset()
-{
-    synth.reset();
-}
 
 //==============================================================================
 void My_JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
@@ -109,6 +105,11 @@ void My_JX11AudioProcessor::releaseResources()
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
     synth.deallocateResources(); // lets Synth object react to changes in sample rate or maximum block size
+}
+
+void My_JX11AudioProcessor::reset()
+{
+    synth.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -149,8 +150,9 @@ void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     // This is here to avoid people getting screaming feedback
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i) {
+        buffer.clear(i, 0, buffer.getNumSamples());
+    }
 
     splitBufferByEvents(buffer, midiMessages);
     /*
@@ -181,32 +183,7 @@ void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     
 }
 
-//==============================================================================
-bool My_JX11AudioProcessor::hasEditor() const
-{
-    return true; // (change this to false if you choose to not supply an editor)
-}
 
-juce::AudioProcessorEditor* My_JX11AudioProcessor::createEditor()
-{
-    return new My_JX11AudioProcessorEditor (*this);
-}
-
-//==============================================================================
-void My_JX11AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
-{
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
-}
-
-void My_JX11AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
-{
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-}
-
-//==============================================================================
 // Split AudioBuffer into smaller pieces manage timing of MIDI messages
 // Juce automatically sorts MIDI messages by their timestamp
 void My_JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer,
@@ -252,7 +229,45 @@ void My_JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t dat
 
 void My_JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)
 {
-    // do nothing yet
+    // Naked float* pointer instead of juce::AudioBuffer, better for porting code
+    // Pass array of two float* pointers to Synth, one for left and one for right
+    // If Synth is configured to run in mono, only first pointer is used and the second will be nullptr
+    float* outputBuffers[2] = { nullptr, nullptr };
+
+    // call buffer.getWritePointer() and pass in the channel number to get a pointer to the audio data inside an AudioBuffer object
+    // bufferOffset added because AudioBuffer is split up based on timestamps of MIDI events
+    outputBuffers[0] = buffer.getWritePointer(0) + bufferOffset;
+    if (getTotalNumOutputChannels() > 1) // for stereo plugins
+    {
+        outputBuffers[1] = buffer.getWritePointer(1) + bufferOffset;
+    }
+
+    synth.render(outputBuffers, sampleCount);
+}
+
+//==============================================================================
+bool My_JX11AudioProcessor::hasEditor() const
+{
+    return true; // (change this to false if you choose to not supply an editor)
+}
+
+juce::AudioProcessorEditor* My_JX11AudioProcessor::createEditor()
+{
+    return new My_JX11AudioProcessorEditor(*this);
+}
+
+//==============================================================================
+void My_JX11AudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+{
+    // You should use this method to store your parameters in the memory block.
+    // You could do that either as raw data, or use the XML or ValueTree classes
+    // as intermediaries to make it easy to save and load complex data.
+}
+
+void My_JX11AudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+{
+    // You should use this method to restore your parameters from this memory block,
+    // whose contents will have been created by the getStateInformation() call.
 }
 
 //==============================================================================

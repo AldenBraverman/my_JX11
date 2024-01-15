@@ -28,11 +28,33 @@ void Synth::deallocateResources()
 void Synth::reset()
 {
     voice.reset();
+    noiseGen.reset();
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
 {
-    // do nothing yet
+    float* outputBufferLeft = outputBuffers[0];
+    float* outputBufferRight = outputBuffers[1];
+
+    // Loop through smaples in buffer
+    // sampleCount is the number of samples we need to render, if there were midi messages, sampleCount will be less than the total number of samples in the block
+    for (int sample = 0; sample < sampleCount; ++sample) {
+        // Get next output from noise gen
+        float noise = noiseGen.nextValue();
+
+        // check if voice.note is not 0 (a key is pressed - synth recieved noteOn but not noteOff)
+        float output = 0.0f;
+        if (voice.note > 0) {
+            // Noise value multiplied by velocity
+            output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
+        }
+
+        // Write output value into audio buffers with mono/stereo logic
+        outputBufferLeft[sample] = output;
+        if (outputBufferRight != nullptr) {
+            outputBufferRight[sample] = output;
+        }
+    }
 }
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
@@ -66,6 +88,7 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity) // registers the note number and velocity of the most recently pressed key
 {
     voice.note = note;
+    voice.velocity = velocity; // you forgot to add this, don't forget it again! Without this, the sound won't play
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note

@@ -1,19 +1,11 @@
-﻿  PluginProcessor.cpp
-  PluginEditor.cpp
+﻿  PluginEditor.cpp
+  PluginProcessor.cpp
   Synth.cpp
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(33,47): warning C4100: 'sampleCount': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(33,28): warning C4100: 'outputBuffers': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,63): warning C4100: 'data2': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,48): warning C4100: 'data1': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(38,33): warning C4100: 'data0': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(80,52): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(84,63): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(89,79): warning C4100: 'newName': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(89,52): warning C4100: 'index': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(190,69): warning C4100: 'destData': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(197,72): warning C4100: 'sizeInBytes': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(197,62): warning C4100: 'data': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,91): warning C4100: 'bufferOffset': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,74): warning C4100: 'sampleCount': unreferenced formal parameter
-C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(245,62): warning C4100: 'buffer': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(260,68): warning C4100: 'destData': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(267,71): warning C4100: 'sizeInBytes': unreferenced formal parameter
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(267,61): warning C4100: 'data': unreferenced formal parameter
   my_JX11_SharedCode.vcxproj -> C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\Shared Code\my_JX11.lib

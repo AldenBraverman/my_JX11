@@ -1,5 +1,4 @@
-﻿  include_juce_audio_plugin_client_VST3.cpp
-     Creating library C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.lib and object C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.exp
+﻿     Creating library C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.lib and object C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.exp
   my_JX11_VST3.vcxproj -> C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.dll
           1 file(s) copied.
   Deleted file - C:\Users\Alden\Documents\GitHub\my_JX11\Builds\VisualStudio2019\x64\Debug\VST3\my_JX11.vst3\Contents\Resources\moduleinfo.json
