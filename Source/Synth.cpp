@@ -47,7 +47,8 @@ void Synth::render(float** outputBuffers, int sampleCount)
         float output = 0.0f;
         if (voice.note > 0) {
             // Noise value multiplied by velocity
-            output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
+            // output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
+            output = voice.render(); // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave
         }
 
         protectYourEars(outputBufferLeft, sampleCount);
@@ -92,13 +93,19 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity) // registers the note number and velocity of the most recently pressed key
 {
     voice.note = note;
-    voice.velocity = velocity; // you forgot to add this, don't forget it again! Without this, the sound won't play
+    // voice.velocity = velocity; // you forgot to add this, don't forget it again! Without this, the sound won't play
+
+    voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc.freq = 261.63f;
+    voice.osc.sampleRate = sampleRate;
+    voice.osc.phaseOffset = 0.0f;
+    voice.osc.reset();
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note
 {
     if (voice.note == note) {
         voice.note = 0;
-        voice.velocity = 0;
+        // voice.velocity = 0;
     }
 }

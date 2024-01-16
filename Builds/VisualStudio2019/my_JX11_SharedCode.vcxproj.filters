@@ -3036,6 +3036,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Oscillator.h">
+      <Filter>my_JX11\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\Utils.h">
       <Filter>my_JX11\Source</Filter>
     </ClInclude>

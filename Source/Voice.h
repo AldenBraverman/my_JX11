@@ -9,14 +9,22 @@
 */
 
 #pragma once
+#include "Oscillator.h"
+
 struct Voice // produce the next output sample for a given note
 {
     int note;
-    int velocity;
+    // int velocity;
+    Oscillator osc; // bring in and set up Oscillator class
 
     void reset() // also for initialization
     {
         note = 0;
-        velocity = 0;
+        // velocity = 0;
+    }
+
+    float render()
+    {
+        return osc.nextSample();
     }
 };

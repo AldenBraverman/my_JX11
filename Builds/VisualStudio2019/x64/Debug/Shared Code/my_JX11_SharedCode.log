@@ -1,6 +1,7 @@
 ﻿  PluginEditor.cpp
   PluginProcessor.cpp
   Synth.cpp
+C:\Users\Alden\Documents\GitHub\my_JX11\Source\Synth.cpp(44,15): warning C4189: 'noise': local variable is initialized but not referenced
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(80,52): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(84,63): warning C4100: 'index': unreferenced formal parameter
 C:\Users\Alden\Documents\GitHub\my_JX11\Source\PluginProcessor.cpp(89,79): warning C4100: 'newName': unreferenced formal parameter
