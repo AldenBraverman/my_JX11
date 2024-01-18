@@ -95,11 +95,15 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     voice.note = note;
     // voice.velocity = velocity; // you forgot to add this, don't forget it again! Without this, the sound won't play
 
+    float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // formula for twelve-tone equal temperament
+    
     voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc.freq = 261.63f;
-    voice.osc.sampleRate = sampleRate;
-    voice.osc.phaseOffset = 0.0f;
+    voice.osc.inc = freq / sampleRate;
     voice.osc.reset();
+    // voice.osc.freq = 261.63f;
+    // voice.osc.sampleRate = sampleRate;
+    // voice.osc.phaseOffset = 0.0f;
+    // voice.osc.reset();
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note
