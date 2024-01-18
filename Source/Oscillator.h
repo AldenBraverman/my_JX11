@@ -25,11 +25,12 @@ public:
     void reset()
     {
         // sampleIndex = 0;
-        // phase = 0; // sine phase
+        phase = 0; // sine phase - also just phase reset lol
         // phase = 1.5707963268f; // cosine phase - but actually plays a triangle because cosine has two samples every cycle
-        sin0 = amplitude * std::sin(phase * TWO_PI);
-        sin1 = amplitude * std::sin((phase - inc) * TWO_PI);
-        dsin = 2.0f * std::cos(inc * TWO_PI);
+        
+        // sin0 = amplitude * std::sin(phase * TWO_PI);
+        // sin1 = amplitude * std::sin((phase - inc) * TWO_PI);
+        // dsin = 2.0f * std::cos(inc * TWO_PI);
     }
 
     float nextSample()
@@ -41,19 +42,21 @@ public:
         return output;
          */
         
-        /*
+        
         phase += inc; // wraps phase around sample window
         if (phase >= 1.0f) {
             phase -= 1.0f;
         }
         
-        return amplitude * std::sin(TWO_PI * phase);
-        */
+        // return amplitude * std::sin(TWO_PI * phase);
+        return amplitude * (2.0f * phase - 1.0f); // "native sawtooth"
         
-        float sinx = dsin * sin0 - sin1;
-        sin1 = sin0;
-        sin0 = sinx;
-        return sinx;
+        
+        // clever sin wave implementation
+        // float sinx = dsin * sin0 - sin1;
+        // sin1 = sin0;
+        // sin0 = sinx;
+        // return sinx;
     }
 private:
     float sin0; // private variable
