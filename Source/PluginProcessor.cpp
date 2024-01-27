@@ -253,7 +253,11 @@ bool My_JX11AudioProcessor::hasEditor() const
 
 juce::AudioProcessorEditor* My_JX11AudioProcessor::createEditor()
 {
-    return new My_JX11AudioProcessorEditor(*this);
+    // return new My_JX11AudioProcessorEditor(*this);
+    // Custom UI
+    auto editor = new juce::GenericAudioProcessorEditor(*this);
+    editor->setSize(500, 1050);
+    return editor;
 }
 
 //==============================================================================
@@ -268,6 +272,37 @@ void My_JX11AudioProcessor::setStateInformation(const void* data, int sizeInByte
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout
+             My_JX11AudioProcessor::createParameterLayout()
+{
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    
+    // ADD PARAMETERS HERE!
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        ParameterID::polyMode,
+        "Polyphony",
+        juce::StringArray { "Mono", "Poly"},
+        1));
+
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscTune,
+        "Osc Tune",
+        juce::NormalisableRange<float>(-24.0f, 24.0f, 1.0f),
+        -12.0f, // default value
+        juce::AudioParameterFloatAttributes().withLabel("semi"))); // units label
+                 
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscFine,
+        "Osc Fine",
+        juce::NormalisableRange<float>(-50.0f, 50.0f, 0.1f, 0.3f, true), // NormalisableRange constructor with 5 arguments enables skewing
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("cent")));
+                 
+    
+    
+    return layout;
 }
 
 //==============================================================================
