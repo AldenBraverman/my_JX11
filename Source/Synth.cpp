@@ -98,10 +98,12 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // formula for twelve-tone equal temperament
     
     voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc.inc = freq / sampleRate;
-    voice.osc.freq = freq;
-    voice.osc.sampleRate = sampleRate;
+    voice.osc.period = sampleRate / freq;
     voice.osc.reset();
+    // voice.osc.inc = freq / sampleRate;
+    // voice.osc.freq = freq;
+    // voice.osc.sampleRate = sampleRate;
+    // voice.osc.reset();
     // voice.osc.freq = 261.63f;
     // voice.osc.sampleRate = sampleRate;
     // voice.osc.phaseOffset = 0.0f;
