@@ -41,14 +41,14 @@ void Synth::render(float** outputBuffers, int sampleCount)
     // sampleCount is the number of samples we need to render, if there were midi messages, sampleCount will be less than the total number of samples in the block
     for (int sample = 0; sample < sampleCount; ++sample) {
         // Get next output from noise gen
-        float noise = noiseGen.nextValue();
+        float noise = noiseGen.nextValue() * noiseMix; // added noiseMix control parameter
 
         // check if voice.note is not 0 (a key is pressed - synth recieved noteOn but not noteOff)
         float output = 0.0f;
         if (voice.note > 0) {
             // Noise value multiplied by velocity
             // output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
-            output = voice.render(); // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave
+            output = voice.render() + noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter
         }
 
         protectYourEars(outputBufferLeft, sampleCount);
