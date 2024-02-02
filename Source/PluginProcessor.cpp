@@ -9,6 +9,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include "Utils.h"
+
 //==============================================================================
 My_JX11AudioProcessor::My_JX11AudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -22,6 +24,37 @@ My_JX11AudioProcessor::My_JX11AudioProcessor()
                        )
 #endif
 {
+    // grab parameter with the identifier ParameterID::noise from the APVTS, casts it to an AudioParameterFloat*, and then assigns it to the noiseParam variable
+    // noiseParam = dynamic_cast<juce::AudioParameterFloat>(apvts.getParameter(ParameterID::noise.getParamID()));
+    
+    // look up all the parameters in the APVTS structure and makes pointers to them
+    // we can now use these pointers directly rather than having to do a slow lookup every time
+    castParameter(apvts, ParameterID::oscMix, oscMixParam);
+    castParameter(apvts, ParameterID::oscTune, oscTuneParam);
+    castParameter(apvts, ParameterID::oscFine, oscFineParam);
+    castParameter(apvts, ParameterID::glideMode, glideModeParam);
+    castParameter(apvts, ParameterID::glideRate, glideRateParam);
+    castParameter(apvts, ParameterID::glideBend, glideBendParam);
+    castParameter(apvts, ParameterID::filterFreq, filterFreqParam);
+    castParameter(apvts, ParameterID::filterReso, filterResoParam);
+    castParameter(apvts, ParameterID::filterEnv, filterEnvParam);
+    castParameter(apvts, ParameterID::filterLFO, filterLFOParam);
+    castParameter(apvts, ParameterID::filterVelocity, filterVelocityParam);
+    castParameter(apvts, ParameterID::filterAttack, filterAttackParam);
+    castParameter(apvts, ParameterID::filterDecay, filterDecayParam);
+    castParameter(apvts, ParameterID::filterSustain, filterSustainParam);
+    castParameter(apvts, ParameterID::filterRelease, filterReleaseParam);
+    castParameter(apvts, ParameterID::envAttack, envAttackParam);
+    castParameter(apvts, ParameterID::envDecay, envDecayParam);
+    castParameter(apvts, ParameterID::envSustain, envSustainParam);
+    castParameter(apvts, ParameterID::envRelease, envReleaseParam);
+    castParameter(apvts, ParameterID::lfoRate, lfoRateParam);
+    castParameter(apvts, ParameterID::vibrato, vibratoParam);
+    castParameter(apvts, ParameterID::noise, noiseParam);
+    castParameter(apvts, ParameterID::octave, octaveParam);
+    castParameter(apvts, ParameterID::tuning, tuningParam);
+    castParameter(apvts, ParameterID::outputLevel, outputLevelParam);
+    castParameter(apvts, ParameterID::polyMode, polyModeParam);
 }
 
 My_JX11AudioProcessor::~My_JX11AudioProcessor()
@@ -144,7 +177,8 @@ void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce
     
     // Read parameters
     const juce::String& paramID = ParameterID::noise.getParamID();
-    float noiseMix = apvts.getRawParameterValue(paramID)->load() / 100.0f;
+    // float noiseMix = apvts.getRawParameterValue(paramID)->load() / 100.0f;
+    float noiseMix = noiseParam->get() / 100.0f; // use parameter through their pointer
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f;
     
