@@ -51,7 +51,8 @@ namespace ParameterID
 //==============================================================================
 /**
 */
-class My_JX11AudioProcessor  : public juce::AudioProcessor // My_JX11AudioProcessor class extends juce::AudioProcessor
+class My_JX11AudioProcessor  : public juce::AudioProcessor, // My_JX11AudioProcessor class extends juce::AudioProcessor
+                               private juce::ValueTree::Listener // also need to inherit listener
 {
 public:
     //==============================================================================
@@ -137,6 +138,16 @@ private:
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout(); // declare method
     
+    void valueTreePropertyChanged(juce::ValueTree&, const juce::Identifier&) override
+    {
+        // when the user or host changes a parameter, valueTreePropertyChanged sets the parametersChanged boolean to true
+        DBG("parameter changed");
+        parametersChanged.store(true);
+    }
+    
+    std::atomic<bool> parametersChanged { false }; // thread safe atomic variable
+    
+    void update();    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (My_JX11AudioProcessor)
 };
