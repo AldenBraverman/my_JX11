@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h> // necessary to pull in all JUCE modules
 #include "Synth.h"
+#include "Preset.h"
 
 /*
  define new namespace containing a juce::ParameterID object for each of the 26 different parameter definition
@@ -147,7 +148,12 @@ private:
     
     std::atomic<bool> parametersChanged { false }; // thread safe atomic variable
     
-    void update();    
+    void update();
+    
+    void createPrograms(); // fills presets vector
+    std::vector<Preset> presets; // includes all Preset objects
+    int currentProgram; // index of currently selected preset
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (My_JX11AudioProcessor)
 };
