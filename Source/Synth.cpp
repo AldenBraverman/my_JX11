@@ -48,7 +48,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (voice.note > 0) {
             // Noise value multiplied by velocity
             // output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
-            output = voice.render() + noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter
+            output = voice.render(noise);// +noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter - update, envelope affects noise now
         }
 
         protectYourEars(outputBufferLeft, sampleCount);
@@ -108,6 +108,7 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // voice.osc.sampleRate = sampleRate;
     // voice.osc.phaseOffset = 0.0f;
     // voice.osc.reset();
+    voice.env.level = 1.0f;
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note

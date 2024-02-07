@@ -10,6 +10,7 @@
 
 #pragma once
 #include "Oscillator.h"
+#include "Envelope.h"
 
 struct Voice // produce the next output sample for a given note
 {
@@ -17,6 +18,7 @@ struct Voice // produce the next output sample for a given note
     // int velocity;
     Oscillator osc; // bring in and set up Oscillator class
     float saw; // "add new variable to the struct"
+    Envelope env;
 
     void reset() // also for initialization
     {
@@ -25,12 +27,15 @@ struct Voice // produce the next output sample for a given note
         saw = 0.0f;
     }
 
-    float render()
+    float render(float input)
     {
         // return osc.nextSample();
         float sample = osc.nextSample();
         saw = saw * 0.997f + sample; // ramp up sawtooth
         // saw = saw * 0.997f - sample; // ramp down sawtooth
-        return saw;
+        float output = saw + input; // input is the noise signal
+        float envelope = env.nextValue();
+
+        return saw * envelope;
     }
 };
