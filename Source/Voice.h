@@ -36,6 +36,6 @@ struct Voice // produce the next output sample for a given note
         float output = saw + input; // input is the noise signal
         float envelope = env.nextValue();
 
-        return saw * envelope;
+        return output * envelope;
     }
 };

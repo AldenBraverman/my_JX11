@@ -223,8 +223,28 @@ bool My_JX11AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 #endif
 
 // update is guaranteed to always run on the audio thread
+// method called from the processBlock whenever a parameter has been changed
 void My_JX11AudioProcessor::update()
 {
+    float sampleRate = float(getSampleRate()); // get sample rate, getSampleRate() function is part of JUCE's AudioProcessor class
+    float inverseSampleRate = 1.0f / sampleRate; // for envelope
+    
+    synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
+    synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
+    synth.envSustain = envSustainParam->get() / 100.0f;
+    float envRelease = envReleaseParam->get();
+    
+    if (envRelease < 1.0f) {
+        synth.envRelease = 0.75f; // extra fast release?
+    } else {
+        synth.envRelease = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
+    }
+    
+    // float decayTime = envDecayParam->get() / 100.0f * 5.0f; // read value from the Env Decay parameter, returns a percentage (divide by 100 to get 1.0 instead of 100), 100% = 5 second decay duration
+    // float decaySamples = sampleRate * decayTime; // convert time to samples
+    // synth.envDecay = std::exp(std::log(SILENCE) / decaySamples); // apply exp() formula to get the multiplier, store result in envDecay variable in the Synth class
+    // Can't set the multiplier on the voice's envelope directly, voice is a private member of Synth
+    
     float noiseMix = noiseParam->get() / 100.0f; // atomic operation, sole place where we read from the noiseParam parameter
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f; // not written or read by anyone else, off-limits for the UI
@@ -597,12 +617,20 @@ juce::AudioProcessorValueTreeState::ParameterLayout
         0.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
 
+    /*
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::envDecay,
         "Env Decay",
         juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
         50.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
+     */
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::envDecay,
+        "Env Decay",
+        juce::NormalisableRange<float>(30.0f, 30000.0f, 0.01f, 0.25f),
+        1500.0f,
+        "ms"));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::envSustain,

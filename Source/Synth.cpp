@@ -109,6 +109,8 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // voice.osc.phaseOffset = 0.0f;
     // voice.osc.reset();
     voice.env.level = 1.0f;
+    voice.env.multiplier = envDecay;
+    voice.env.target = 0.2f;
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note
