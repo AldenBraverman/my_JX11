@@ -45,21 +45,24 @@ void Synth::render(float** outputBuffers, int sampleCount)
 
         // check if voice.note is not 0 (a key is pressed - synth recieved noteOn but not noteOff)
         float output = 0.0f;
-        if (voice.note > 0) {
+        if (voice.env.isActive()) { // originally was voice.note > 0
             // Noise value multiplied by velocity
             // output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
             output = voice.render(noise);// +noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter - update, envelope affects noise now
         }
-
-        protectYourEars(outputBufferLeft, sampleCount);
-        protectYourEars(outputBufferRight, sampleCount);
-
         // Write output value into audio buffers with mono/stereo logic
         outputBufferLeft[sample] = output;
         if (outputBufferRight != nullptr) {
             outputBufferRight[sample] = output;
         }
     }
+    
+    if (!voice.env.isActive()) {
+        voice.env.reset();
+    }
+    
+    protectYourEars(outputBufferLeft, sampleCount); // moved out of render
+    protectYourEars(outputBufferRight, sampleCount); // moved out of render
 }
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
@@ -108,15 +111,27 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // voice.osc.sampleRate = sampleRate;
     // voice.osc.phaseOffset = 0.0f;
     // voice.osc.reset();
-    voice.env.level = 1.0f;
-    voice.env.multiplier = envDecay;
-    voice.env.target = 0.2f;
+    // voice.env.level = 1.0f;
+    // voice.env.multiplier = envDecay;
+    // voice.env.target = 0.2f;
+    Envelope& env = voice.env;
+    env.attackMultiplier = envAttack;
+    env.decayMultiplier = envDecay;
+    env.sustainLevel = envSustain;
+    env.releaseMultiplier = envRelease;
+    env.attack();
+    
+    // env.level = 1.0f;
+    // env.target = env.sustainLevel;
+    // env.target = 20.0f;
+    // env.multiplier = env.decayMultiplier;
 }
 
 void Synth::noteOff(int note) // voice.note variable is cleared only if the key that was released is for the same note
 {
     if (voice.note == note) {
-        voice.note = 0;
+        // voice.note = 0;
+        voice.release();
         // voice.velocity = 0;
     }
 }

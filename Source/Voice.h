@@ -25,6 +25,7 @@ struct Voice // produce the next output sample for a given note
         note = 0;
         // velocity = 0;
         saw = 0.0f;
+        env.reset();
     }
 
     float render(float input)
@@ -37,5 +38,11 @@ struct Voice // produce the next output sample for a given note
         float envelope = env.nextValue();
 
         return output * envelope;
+        // return envelope // for debugging the envelope
+    }
+    
+    void release()
+    {
+        env.release(); // pass equest to the envelope
     }
 };
