@@ -100,9 +100,9 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
 
     float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // formula for twelve-tone equal temperament
     
-    voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc.period = sampleRate / freq;
-    voice.osc.reset();
+    // voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
+    // voice.osc.period = sampleRate / freq;
+    // voice.osc.reset();
     // voice.osc.inc = freq / sampleRate;
     // voice.osc.freq = freq;
     // voice.osc.sampleRate = sampleRate;
@@ -114,6 +114,17 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // voice.env.level = 1.0f;
     // voice.env.multiplier = envDecay;
     // voice.env.target = 0.2f;
+    
+    // activate first oscillator
+    voice.osc1.period = sampleRate / freq;
+    voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc1.reset();
+    
+    // activate second oscillator
+    voice.osc2.period = voice.osc1.period;
+    voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+    voice.osc2.reset();
+    
     Envelope& env = voice.env;
     env.attackMultiplier = envAttack;
     env.decayMultiplier = envDecay;

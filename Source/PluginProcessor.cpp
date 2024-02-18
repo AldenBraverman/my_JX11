@@ -248,6 +248,8 @@ void My_JX11AudioProcessor::update()
     float noiseMix = noiseParam->get() / 100.0f; // atomic operation, sole place where we read from the noiseParam parameter
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f; // not written or read by anyone else, off-limits for the UI
+    
+    synth.oscMix = oscMixParam->get() / 100.0f;
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback
