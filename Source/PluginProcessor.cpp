@@ -250,6 +250,11 @@ void My_JX11AudioProcessor::update()
     synth.noiseMix = noiseMix * 0.06f; // not written or read by anyone else, off-limits for the UI
     
     synth.oscMix = oscMixParam->get() / 100.0f;
+
+    float semi = oscTuneParam->get();
+    float cent = oscFineParam->get();
+    synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent); // from oscillator chapter, we can get the pitch of any note by taking a starting pitch and multiply by 2^(N/12), where N is number of fractional semitones
+    // 2^(1/12) = 1.059463094359... 2^(N/12) = 1.059463094359^N
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback

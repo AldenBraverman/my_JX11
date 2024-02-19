@@ -21,6 +21,8 @@ struct Voice // produce the next output sample for a given note
     float saw; // "add new variable to the struct"
     Envelope env;
 
+    float period; // "add new property to the Voice struct"
+
     void reset() // also for initialization
     {
         note = 0;
