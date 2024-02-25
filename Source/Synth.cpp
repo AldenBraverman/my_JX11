@@ -93,6 +93,12 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
     }
 }
 
+void Synth::calcPeriod(int note) const
+{
+    float period = tune * std::exp(-0.05776226505f * float(note));
+    return period;
+}
+
 void Synth::noteOn(int note, int velocity) // registers the note number and velocity of the most recently pressed key
 {
     voice.note = note;
@@ -116,13 +122,17 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // voice.env.target = 0.2f;
     
     // activate first oscillator
-    voice.osc1.period = sampleRate / freq;
+    // voice.osc1.period = sampleRate / freq;
+
+    voice.period = sampleRate / freq;
     voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+
     voice.osc1.reset();
     
     // activate second oscillator
-    voice.osc2.period = voice.osc1.period * detune;
-    voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+    // voice.osc2.period = voice.osc1.period * detune;
+    // voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     voice.osc2.reset();
     
     Envelope& env = voice.env;

@@ -255,6 +255,10 @@ void My_JX11AudioProcessor::update()
     float cent = oscFineParam->get();
     synth.detune = std::pow(1.059463094359f, -semi - 0.01f * cent); // from oscillator chapter, we can get the pitch of any note by taking a starting pitch and multiply by 2^(N/12), where N is number of fractional semitones
     // 2^(1/12) = 1.059463094359... 2^(N/12) = 1.059463094359^N
+
+    float octave = octaveParam->get();
+    float tuning = tuningParam->get();
+    synth.tune = octave * 12.0f + tuning / 100.0f;
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback

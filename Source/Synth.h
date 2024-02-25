@@ -26,6 +26,8 @@ public:
     void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
     
     float detune;
+
+    float tune;
     
     float oscMix; // public variable because it will be filled in by the audio processor
     
@@ -42,4 +44,5 @@ private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
     NoiseGenerator noiseGen; // Set up NoiseGenerator class
+    float calcPeriod(int note) const;
 };
