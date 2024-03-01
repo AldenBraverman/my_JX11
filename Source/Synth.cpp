@@ -30,30 +30,48 @@ void Synth::reset()
 {
     voice.reset();
     noiseGen.reset();
+    pitchBend = 1.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
 {
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
+    
+    voice.osc1.period = voice.period * pitchBend; // FORGOT THESE LINES, NO SOUND WITHOUT THEM
+    voice.osc2.period = voice.osc1.period * detune;
 
     // Loop through smaples in buffer
     // sampleCount is the number of samples we need to render, if there were midi messages, sampleCount will be less than the total number of samples in the block
     for (int sample = 0; sample < sampleCount; ++sample) {
+        
         // Get next output from noise gen
         float noise = noiseGen.nextValue() * noiseMix; // added noiseMix control parameter
 
         // check if voice.note is not 0 (a key is pressed - synth recieved noteOn but not noteOff)
-        float output = 0.0f;
+        //float output = 0.0f;
+        // separate output variables for the left and right channels
+        float outputLeft = 0.0f;
+        float outputRight = 0.0f;
+        
+        
         if (voice.env.isActive()) { // originally was voice.note > 0
             // Noise value multiplied by velocity
             // output = noise * (voice.velocity / 127.0f) * 0.5f; // Multiplying the output by 0.5 = 6 dB reduction in gain
-            output = voice.render(noise);// +noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter - update, envelope affects noise now
+            // output = voice.render(noise);// +noise; // instead of using output of noise gen, now we ask VOice object to produce next value for sin wave - update, added noise mix parameter - update, envelope affects noise now
+            // sample renders in stereo
+            float output = voice.render(noise);
+            outputLeft += output * voice.panLeft;
+            outputRight += output * voice.panRight;
         }
         // Write output value into audio buffers with mono/stereo logic
-        outputBufferLeft[sample] = output;
+        // outputBufferLeft[sample] = output;
+        // write sample values for left and right channels to their respective audio buffers
         if (outputBufferRight != nullptr) {
-            outputBufferRight[sample] = output;
+            outputBufferLeft[sample] = outputLeft;
+            outputBufferRight[sample] = outputRight;
+        } else {
+            outputBufferLeft[sample] = (outputLeft + outputRight) * 0.5;
         }
     }
     
@@ -90,21 +108,29 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
             }
             break;
         }
+        
+        // Pitch Bend
+        case 0xE0 :
+            pitchBend = std::exp(-0.000014102f * float(data1 + 128 * data2 - 8192));
+            break;
     }
 }
 
-void Synth::calcPeriod(int note) const
+float Synth::calcPeriod(int note) const
 {
     float period = tune * std::exp(-0.05776226505f * float(note));
+    while (period < 6.0f || (period * detune) < 6.0f) { period += period; }
     return period;
 }
 
 void Synth::noteOn(int note, int velocity) // registers the note number and velocity of the most recently pressed key
 {
     voice.note = note;
+    voice.updatePanning();
     // voice.velocity = velocity; // you forgot to add this, don't forget it again! Without this, the sound won't play
 
-    float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // formula for twelve-tone equal temperament
+    // float freq = 440.0f * std::exp2(float(note - 69) / 12.0f); // formula for twelve-tone equal temperament
+    float period = calcPeriod(note);
     
     // voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
     // voice.osc.period = sampleRate / freq;
@@ -124,16 +150,17 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     // activate first oscillator
     // voice.osc1.period = sampleRate / freq;
 
-    voice.period = sampleRate / freq;
+    // voice.period = sampleRate / freq;
+    voice.period = period;
     voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
 
-    voice.osc1.reset();
+    // voice.osc1.reset();
     
     // activate second oscillator
     // voice.osc2.period = voice.osc1.period * detune;
     // voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
-    voice.osc2.reset();
+    // voice.osc2.reset();
     
     Envelope& env = voice.env;
     env.attackMultiplier = envAttack;

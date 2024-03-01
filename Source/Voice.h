@@ -22,15 +22,21 @@ struct Voice // produce the next output sample for a given note
     Envelope env;
 
     float period; // "add new property to the Voice struct"
+    
+    float panLeft, panRight;
 
     void reset() // also for initialization
     {
         note = 0;
         // velocity = 0;
         saw = 0.0f;
-        env.reset();
+
         osc1.reset();
         osc2.reset();
+        env.reset();
+        
+        panLeft = 0.707f;
+        panRight = 0.707f;
     }
 
     float render(float input)
@@ -41,15 +47,23 @@ struct Voice // produce the next output sample for a given note
         float sample2 = osc2.nextSample();
         saw = saw * 0.997f + sample1 - sample2; // ramp up sawtooth
         // saw = saw * 0.997f - sample; // ramp down sawtooth
+        
         float output = saw + input; // input is the noise signal
         float envelope = env.nextValue();
-
         return output * envelope;
+        
         // return envelope // for debugging the envelope
     }
     
     void release()
     {
         env.release(); // pass equest to the envelope
+    }
+    
+    void updatePanning() // nice crossover for panning
+    {
+        float panning = std::clamp((note - 60.0f) / 24.0f, -1.0f, 1.0f); // TO-DO: CHANGE THIS TO A PLUGIN PARAMETER
+        panLeft = std::sin(PI_OVER_4 * (1.0f - panning));
+        panRight = std::sin(PI_OVER_4 * (1.0f + panning));
     }
 };

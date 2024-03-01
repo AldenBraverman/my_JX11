@@ -45,4 +45,5 @@ private:
     void noteOff(int note);
     NoiseGenerator noiseGen; // Set up NoiseGenerator class
     float calcPeriod(int note) const;
+    float pitchBend;
 };
