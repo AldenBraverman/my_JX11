@@ -261,6 +261,8 @@ void My_JX11AudioProcessor::update()
     float tuneInSemi = -36.3763f - 12.0f * octave - tuning / 100.0f;
     // synth.tune = octave * 12.0f + tuning / 100.0f;
     synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi);
+    
+    synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES; // Index = 0 = Mono, Index = 1 = Poly
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback

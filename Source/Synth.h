@@ -24,6 +24,7 @@ public:
     void reset();
     void render(float** outputBuffers, int sampleCount);
     void midiMessage(uint8_t data0, uint8_t data1, uint8_t data2);
+    void controlChange(uint8_t data1, uint8_t data2);
     
     float detune;
 
@@ -37,13 +38,20 @@ public:
     float envDecay;
     float envSustain;
     float envRelease;
+    
+    static constexpr int MAX_VOICES = 8;
+    int numVoices;
 
 private:
     float sampleRate;
-    Voice voice; // Set up Voice class
+    // Voice voice; // Set up Voice class // this is just one voice for monophonic
+    std::array<Voice, MAX_VOICES> voices; // array of voices for polyphony
     void noteOn(int note, int velocity);
     void noteOff(int note);
     NoiseGenerator noiseGen; // Set up NoiseGenerator class
-    float calcPeriod(int note) const;
+    float calcPeriod(int v, int note) const;
     float pitchBend;
+    void startVoice(int v, int note, int velocity); // v = index of voice to use
+    int findFreeVoice() const; // voice stealing
+    bool sustainPedalPressed;
 };
