@@ -54,6 +54,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (voice.env.isActive()) {
             voice.osc1.period = voice.period * pitchBend;
             voice.osc2.period = voice.osc1.period * detune;
+            DBG(v);
         }
     }
 
