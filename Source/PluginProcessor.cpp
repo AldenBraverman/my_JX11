@@ -55,6 +55,7 @@ My_JX11AudioProcessor::My_JX11AudioProcessor()
     castParameter(apvts, ParameterID::tuning, tuningParam);
     castParameter(apvts, ParameterID::outputLevel, outputLevelParam);
     castParameter(apvts, ParameterID::polyMode, polyModeParam);
+    castParameter(apvts, ParameterID::panningLevel, panningLevelParam);
     
     apvts.state.addListener(this);
     
@@ -149,6 +150,7 @@ void My_JX11AudioProcessor::setCurrentProgram (int index)
         tuningParam,
         outputLevelParam,
         polyModeParam,
+        panningLevelParam,
     };
 
     const Preset& preset = presets[index];
@@ -496,7 +498,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
+    // ==============================================================
     // ADD PARAMETERS HERE!
+    // ==============================================================
+                 
+    
+    
     layout.add(std::make_unique<juce::AudioParameterChoice>(
         ParameterID::polyMode,
         "Polyphony",

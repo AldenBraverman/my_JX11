@@ -45,6 +45,7 @@ namespace ParameterID
     PARAMETER_ID(tuning)
     PARAMETER_ID(outputLevel)
     PARAMETER_ID(polyMode)
+    PARAMETER_ID(panningLevel)
 
     #undef PARAMETER_ID
 }
@@ -136,6 +137,7 @@ private:
     juce::AudioParameterFloat* tuningParam;
     juce::AudioParameterFloat* outputLevelParam;
     juce::AudioParameterChoice* polyModeParam;
+    juce::AudioParameterFloat* panningLevelParam;
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout(); // declare method
     

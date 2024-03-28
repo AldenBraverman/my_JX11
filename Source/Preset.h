@@ -12,7 +12,7 @@
 
 #include <cstring>
 
-const int NUM_PARAMS = 26;
+const int NUM_PARAMS = 27; // originally 26
 
 // Describes a factory preset.
 struct Preset
@@ -24,7 +24,7 @@ struct Preset
            float p12, float p13, float p14, float p15,
            float p16, float p17, float p18, float p19,
            float p20, float p21, float p22, float p23,
-           float p24, float p25)
+           float p24, float p25, float p26)
     {
         strcpy(this->name, name);
         param[0]  = p0;   // Osc Mix
@@ -53,6 +53,7 @@ struct Preset
         param[23] = p23;  // Tuning
         param[24] = p24;  // Output Level
         param[25] = p25;  // Polyphony
+        param[26] = p26;  // Panning Level
     }
 
     char name[40];
