@@ -194,6 +194,9 @@ void My_JX11AudioProcessor::releaseResources()
 void My_JX11AudioProcessor::reset()
 {
     synth.reset();
+    synth.outputLevelSmoother.setCurrentAndTargetValue(
+                                                       juce::Decibels::decibelsToGain(outputLevelParam->get())
+                                                       );
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -250,6 +253,13 @@ void My_JX11AudioProcessor::update()
     synth.noiseMix = noiseMix * 0.06f; // not written or read by anyone else, off-limits for the UI
     
     synth.oscMix = oscMixParam->get() / 100.0f;
+    
+    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
+    
+    // synth.outputLevel = juce::Decibels::decibelsToGain(outputLevelParam->get());
+    synth.outputLevelSmoother.setTargetValue(
+                                             juce::Decibels::decibelsToGain(outputLevelParam->get())
+                                             );
 
     float semi = oscTuneParam->get();
     float cent = oscFineParam->get();

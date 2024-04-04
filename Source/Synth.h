@@ -43,6 +43,11 @@ public:
     
     static constexpr int MAX_VOICES = 8;
     int numVoices;
+    
+    // float outputLevel;
+    
+    // juce::LinearSmoothedValue does linear interpolation between the previous value and the new value
+    juce::LinearSmoothedValue<float> outputLevelSmoother;
 
 private:
     float sampleRate;
@@ -56,4 +61,5 @@ private:
     void startVoice(int v, int note, int velocity); // v = index of voice to use
     int findFreeVoice() const; // voice stealing
     bool sustainPedalPressed;
+    void restartMonoVoice(int note, int velocity);
 };

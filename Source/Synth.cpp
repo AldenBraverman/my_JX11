@@ -38,6 +38,8 @@ void Synth::reset()
     noiseGen.reset();
     pitchBend = 1.0f;
     sustainPedalPressed = false;
+    
+    outputLevelSmoother.reset(sampleRate, 0.05);
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -58,7 +60,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         }
     }
 
-    // Loop through smaples in buffer
+    // Loop through samples in buffer
     // sampleCount is the number of samples we need to render, if there were midi messages, sampleCount will be less than the total number of samples in the block
     for (int sample = 0; sample < sampleCount; ++sample) {
         
@@ -79,6 +81,10 @@ void Synth::render(float** outputBuffers, int sampleCount)
                 float output = voice.render(noise);
                 outputLeft += output * voice.panLeft;
                 outputRight += output * voice.panRight;
+                
+                float outputLevel = outputLevelSmoother.getNextValue();
+                outputLeft *= outputLevel;
+                outputRight *= outputLevel;
             }
         }
         
@@ -196,11 +202,38 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     
     int v = 0; // index of the voice to use (0 = mono voice)
     
+    /*
     if (numVoices > 1) { // polyphonics
         v = findFreeVoice();
         // if no notes are playing yet, findFreeVoice returns 0
         // Otherwise, it returns the index of the next free voice
         // if all voices are in use, return the index of the voice with the smallest envelope level
+    }
+    */
+    
+    if(numVoices == 1) { // monophonic
+        DBG("Voice 1");
+        if (voices[0].note > 0) { // legato-style playing
+            restartMonoVoice(note, velocity);
+            return;
+        }
+    }
+    
+    
+    // TESTING START
+    if(numVoices == 2) {
+        DBG("Voice 2");
+    }
+    if(numVoices == 3) {
+        DBG("Voice 3");
+    }
+    if(numVoices == 4) {
+        DBG("Voice 4");
+    }
+    // TESTING END
+    
+    else { // polyphonic
+        v = findFreeVoice();
     }
     
     startVoice(v, note, velocity);
@@ -329,4 +362,16 @@ int Synth::findFreeVoice() const
      
      */
     
+}
+
+void Synth::restartMonoVoice(int note, int velocity)
+{
+    float period = calcPeriod(0, note);
+    
+    Voice& voice = voices[0];
+    voice.period = period;
+    
+    voice.env.level += SILENCE + SILENCE;
+    voice.note = note;
+    voice.updatePanning();
 }
