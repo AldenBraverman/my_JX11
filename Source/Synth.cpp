@@ -12,6 +12,7 @@
 #include "Utils.h"
 
 static const float ANALOG = 0.002f; // polyphony enhancement
+static const int SUSTAIN = -1;
 
 Synth::Synth()
 {
@@ -177,7 +178,8 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
     voice.note = note;
     voice.updatePanning();
     
-    voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    // voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
+    voice.osc1.amplitude = volumeTrim * velocity; 
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     
     Envelope& env = voice.env;
@@ -267,8 +269,14 @@ void Synth::noteOff(int note) // voice.note variable is cleared only if the key 
     */
     for (int v = 0; v < MAX_VOICES; v++){
         if (voices[v].note == note) {
-            voices[v].release();
-            voices[v].note = 0;
+            // voices[v].release();
+            // voices[v].note = 0;
+            if (sustainPedalPressed) {
+                voices[v].note = SUSTAIN;
+            } else {
+                voices[v].release();
+                voices[v].note = 0;
+            }
         }
     }
 }
@@ -276,9 +284,21 @@ void Synth::noteOff(int note) // voice.note variable is cleared only if the key 
 void Synth::controlChange(uint8_t data1, uint8_t data2)
 {
     switch (data1) {
+        default:
+            if (data1 >= 0x78) {
+                for (int v = 0; v < MAX_VOICES; ++v) {
+                    voices[v].reset();
+                }
+                sustainPedalPressed = false;
+            }
+            break;
         // Sustain pedal
         case 0x40 :
             sustainPedalPressed = (data2 >= 64);
+
+            if (!sustainPedalPressed) { 
+                noteOff(SUSTAIN);
+            }
             break;
     }
 }
