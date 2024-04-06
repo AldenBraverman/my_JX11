@@ -212,8 +212,9 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     */
     
     if(numVoices == 1) { // monophonic
-        DBG("Voice 1");
+        DBG("Synth::noteOn where numVoices == 1");
         if (voices[0].note > 0) { // legato-style playing
+            shiftQueuedNotes();
             restartMonoVoice(note, velocity);
             return;
         }
@@ -222,13 +223,13 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     
     // TESTING START
     if(numVoices == 2) {
-        DBG("Voice 2");
+        DBG("Synth::noteOn where numVoices == 2");
     }
     if(numVoices == 3) {
-        DBG("Voice 3");
+        DBG("Synth::noteOn where numVoices == 3");
     }
     if(numVoices == 4) {
-        DBG("Voice 4");
+        DBG("Synth::noteOn where numVoices == 4");
     }
     // TESTING END
     
@@ -300,6 +301,14 @@ void Synth::noteOff(int note) // voice.note variable is cleared only if the key 
         // voice.velocity = 0;
     }
     */
+    
+    if ((numVoices == 1) && (voices[0].note == note)) {
+        int queuedNote = nextQueuedNote();
+        if (queuedNote > 0) {
+            restartMonoVoice(queuedNote, -1);
+        }
+    }
+    
     for (int v = 0; v < MAX_VOICES; v++){
         if (voices[v].note == note) {
             // voices[v].release();
@@ -374,4 +383,27 @@ void Synth::restartMonoVoice(int note, int velocity)
     voice.env.level += SILENCE + SILENCE;
     voice.note = note;
     voice.updatePanning();
+}
+
+void Synth::shiftQueuedNotes()
+{
+    for (int tmp = MAX_VOICES - 1; tmp > 0; tmp--) {
+        voices[tmp].note = voices[tmp - 1].note;
+    }
+}
+
+int Synth::nextQueuedNote()
+{
+    int held = 0;
+    for (int v = MAX_VOICES - 1; v > 0; v--) {
+        if (voices[v].note > 0) { held = v; }
+    }
+    
+    if (held > 0) {
+        int note = voices[held].note;
+        voices[held].note = 0;
+        return note;
+    }
+    
+    return 0;
 }

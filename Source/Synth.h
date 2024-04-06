@@ -62,4 +62,6 @@ private:
     int findFreeVoice() const; // voice stealing
     bool sustainPedalPressed;
     void restartMonoVoice(int note, int velocity);
+    void shiftQueuedNotes();
+    int nextQueuedNote();
 };
