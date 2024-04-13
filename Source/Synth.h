@@ -48,6 +48,13 @@ public:
     
     // juce::LinearSmoothedValue does linear interpolation between the previous value and the new value
     juce::LinearSmoothedValue<float> outputLevelSmoother;
+    
+    float velocitySensitivity;
+    bool ignoreVelocity;
+    
+    const int LFO_MAX = 32;
+    float lfoInc;
+    float vibrato;
 
 private:
     float sampleRate;
@@ -64,4 +71,8 @@ private:
     void restartMonoVoice(int note, int velocity);
     void shiftQueuedNotes();
     int nextQueuedNote();
+    
+    void updateLFO();
+    int lfoStep;
+    float lfo;
 };

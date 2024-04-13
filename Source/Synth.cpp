@@ -40,6 +40,9 @@ void Synth::reset()
     sustainPedalPressed = false;
     
     outputLevelSmoother.reset(sampleRate, 0.05);
+    
+    lfo = 0.0f;
+    lfoStep = 0;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -63,6 +66,8 @@ void Synth::render(float** outputBuffers, int sampleCount)
     // Loop through samples in buffer
     // sampleCount is the number of samples we need to render, if there were midi messages, sampleCount will be less than the total number of samples in the block
     for (int sample = 0; sample < sampleCount; ++sample) {
+        
+        updateLFO();
         
         // Get next output from noise gen
         const float noise = noiseGen.nextValue() * noiseMix; // added noiseMix control parameter
@@ -185,7 +190,9 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
     voice.updatePanning();
     
     // voice.osc1.amplitude = (velocity / 127.0f) * 0.5f;
-    voice.osc1.amplitude = volumeTrim * velocity; 
+    // voice.osc1.amplitude = volumeTrim * velocity;
+    float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
+    voice.osc1.amplitude = volumeTrim * vel;
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     
     Envelope& env = voice.env;
@@ -198,6 +205,7 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
 
 void Synth::noteOn(int note, int velocity) // registers the note number and velocity of the most recently pressed key
 {
+    if (ignoreVelocity) { velocity = 80; }
     // startVoice(0, note, velocity);
     
     int v = 0; // index of the voice to use (0 = mono voice)
@@ -406,4 +414,41 @@ int Synth::nextQueuedNote()
     }
     
     return 0;
+}
+
+void Synth::updateLFO()
+{
+    /* 1
+     Decrement lfoStep every time this function is called
+     When lfoStep reaches 0, if block executed (if statement entered after every 32 samples aka LFO_MAX=32)
+     */
+    if (--lfoStep < 0) {
+        lfoStep = LFO_MAX;
+        
+        /* 2
+         Increment the LFO's phase variable lfo with the step size lfoInc
+         When this exceeds PI, subtract TWO_PI to put lfo back to -PI
+         Review chapter five (intro to oscillators) to understand how this works, basically need to keep phase between -PI and PI
+         */
+        lfo += lfoInc;
+        if (lfo > PI) { lfo -= TWO_PI; }
+        
+        /* 3
+         Calculate sine value, std::sin is called only once every 32 samples
+         */
+        const float sine = std::sin(lfo);
+        
+        /* 4
+         Use output value from the LFO to calculate a vibrato amount and assign this to the modulation property of the two oscillators
+         */
+        float vibratoMod = 1.0f + sine * vibrato; // 0.2f;
+        
+        for (int v = 0; v < MAX_VOICES; ++v) {
+            Voice& voice = voices[v];
+            if (voice.env.isActive()) {
+                voice.osc1.modulation = vibratoMod;
+                voice.osc2.modulation = vibratoMod;
+            }
+        }
+    }
 }

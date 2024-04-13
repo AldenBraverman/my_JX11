@@ -34,6 +34,8 @@ public:
     
     // Band-Limited Impulse Train Algorithm
     float period = 0.0f;
+    
+    float modulation = 1.0f;
 
     void reset()
     {
@@ -128,7 +130,7 @@ public:
              the floor function is used to estimate the halfway point, this helps reduce aliasing
              this also eans inc isn't going to be exactly pi but a value close to it
              */
-            float halfPeriod = period / 2.0f;
+            float halfPeriod = (period / 2.0f) * modulation; // added vibrato modulation!
             phaseMax = std::floor(0.5f + halfPeriod) - 0.5f;
             dc = 0.5 * amplitude / phaseMax; // remove dc offset
             phaseMax *= PI;
@@ -171,6 +173,19 @@ public:
             output = sinp / phase;
         }
         return output - dc; // output with dc offset removed (the low 0hz frequency is removed)
+    }
+    
+    void squareWave(Oscillator& other, float newPeriod)
+    {
+        /*
+         1
+         */
+        reset();
+        
+        /*
+         2
+         */
+        
     }
 private:
     float sin0; // private variable

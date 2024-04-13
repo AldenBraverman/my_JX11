@@ -232,6 +232,23 @@ void My_JX11AudioProcessor::update()
     float sampleRate = float(getSampleRate()); // get sample rate, getSampleRate() function is part of JUCE's AudioProcessor class
     float inverseSampleRate = 1.0f / sampleRate; // for envelope
     
+    const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
+    
+    float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f); // (7x - 4), skew function that turns 0-1 to 0.0183-20.086
+    synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
+    
+    float filterVelocity = filterVelocityParam->get();
+    if (filterVelocity < -90.0f) {
+        synth.velocitySensitivity = 0.0f;
+        synth.ignoreVelocity = true;
+    } else {
+        synth.velocitySensitivity = 0.0005f * filterVelocity;
+        synth.ignoreVelocity = false;
+    }
+    
+    float vibrato = vibratoParam->get() / 200.0f;
+    synth.vibrato = 0.2f * vibrato * vibrato;
+    
     synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
     synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
     synth.envSustain = envSustainParam->get() / 100.0f;
