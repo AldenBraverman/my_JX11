@@ -33,6 +33,8 @@ public:
     float tune;
     
     float oscMix; // public variable because it will be filled in by the audio processor
+
+    float pwmDepth;
     
     float noiseMix;
     

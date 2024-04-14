@@ -248,6 +248,9 @@ void My_JX11AudioProcessor::update()
     
     float vibrato = vibratoParam->get() / 200.0f;
     synth.vibrato = 0.2f * vibrato * vibrato;
+
+    synth.pwmDepth = synth.vibrato;
+    if (vibrato < 0.0f) { synth.vibrato = 0.0f; }
     
     synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
     synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));

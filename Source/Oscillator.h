@@ -177,15 +177,35 @@ public:
     
     void squareWave(Oscillator& other, float newPeriod)
     {
-        /*
-         1
+        /* 1
+         reset this oscillator
          */
         reset();
         
-        /*
-         2
+        /* 2
+         figure out phase of the other oscillator and which direction it is going
+         this is specific to the BLIT algorithm
          */
-        
+        if (other.inc > 0.0f) {
+            phase = other.phaseMax + other.phaseMax - other.phase;
+            inc = -other.inc;
+        }
+        else if (other.inc < 0.0f) {
+            phase = other.phase;
+            inc = other.inc;
+        }
+        else { // if other.inc equals zero, the other oscillator has not started and we dont know ehre its peaks will be, guess the value of inc as a value close to PI
+            phase = -PI;
+            inc = PI;
+        }
+
+        /* 3
+         Shift phase by half a period so we are halfway between the peaks of the other oscillator
+         phase measured in samples times PI
+         newPeriod variable used here is the unmodulated period for the note to play
+         */
+        phase += PI * newPeriod / 2.0f;
+        phaseMax = phase;
     }
 private:
     float sin0; // private variable

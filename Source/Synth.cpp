@@ -442,12 +442,14 @@ void Synth::updateLFO()
          Use output value from the LFO to calculate a vibrato amount and assign this to the modulation property of the two oscillators
          */
         float vibratoMod = 1.0f + sine * vibrato; // 0.2f;
+        float pwm = 1.0f + sine * pwmDepth;
         
         for (int v = 0; v < MAX_VOICES; ++v) {
             Voice& voice = voices[v];
             if (voice.env.isActive()) {
                 voice.osc1.modulation = vibratoMod;
-                voice.osc2.modulation = vibratoMod;
+                // voice.osc2.modulation = vibratoMod;
+                voice.osc2.modulation = pwm;
             }
         }
     }
