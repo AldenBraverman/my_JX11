@@ -57,7 +57,10 @@ public:
     const int LFO_MAX = 32;
     float lfoInc;
     float vibrato;
-
+    
+    int glideMode;
+    float glideRate;
+    float glideBend;
 private:
     float sampleRate;
     // Voice voice; // Set up Voice class // this is just one voice for monophonic
@@ -77,4 +80,7 @@ private:
     void updateLFO();
     int lfoStep;
     float lfo;
+    float modWheel;
+    
+    int lastNote;
 };

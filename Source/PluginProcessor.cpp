@@ -237,6 +237,17 @@ void My_JX11AudioProcessor::update()
     float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f); // (7x - 4), skew function that turns 0-1 to 0.0183-20.086
     synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
     
+    synth.glideMode = glideModeParam->getIndex();
+    
+    float glideRate = glideRateParam->get();
+    if (glideRate < 2.0f) {
+        synth.glideRate = 1.0f; // no glide
+    } else {
+        synth.glideRate = 1.0f - std::exp(-inverseUpdateRate * std::exp(6.0f - 0.07f * glideRate));
+    }
+    
+    synth.glideBend = glideBendParam->get();
+    
     float filterVelocity = filterVelocityParam->get();
     if (filterVelocity < -90.0f) {
         synth.velocitySensitivity = 0.0f;

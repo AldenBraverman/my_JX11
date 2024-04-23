@@ -24,6 +24,8 @@ struct Voice // produce the next output sample for a given note
     float period; // "add new property to the Voice struct"
     
     float panLeft, panRight;
+    
+    float target;
 
     void reset() // also for initialization
     {

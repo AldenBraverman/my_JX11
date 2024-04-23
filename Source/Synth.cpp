@@ -43,6 +43,9 @@ void Synth::reset()
     
     lfo = 0.0f;
     lfoStep = 0;
+    modWheel = 0.0f;
+    
+    lastNote = 0;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -169,6 +172,11 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
         case 0xB0 :
             controlChange(data1, data2);
             break;
+            
+        // Mod Wheel
+        case 0x01 :
+            modWheel = 0.000005f * float(data2 * data2);
+            break;
     }
 }
 
@@ -185,7 +193,32 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
     float period = calcPeriod(v, note);
     
     Voice& voice = voices[v]; // new line from noteOn
-    voice.period = period;
+    // voice.period = period;
+    voice.target = period; // for glide
+    
+    /*
+     Find how far away the new note is in semitones
+     */
+    int noteDistance = 0;
+    if (lastNote > 0) {
+        noteDistance = note - lastNote;
+    }
+    
+    /*
+     Set voice.erpiod to the period to glide from
+     necessary because in polyphony mode, the voice may not have the period of the most recent note that was played, if that note was handled by another voice
+     */
+    voice.period = period * std::pow(1.059463094359f, float(noteDistance) - glideBend);
+    
+    /*
+     4
+     */
+    if (voice.period < 6.0f) { voice.period = 6.0f; }
+    
+    /*
+     5
+     */
+    lastNote = note;
     voice.note = note;
     voice.updatePanning();
     
@@ -194,6 +227,10 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
     float vel = 0.004f * float((velocity + 64) * (velocity + 64)) - 8.0f;
     voice.osc1.amplitude = volumeTrim * vel;
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
+    
+    if (vibrato == 0.0f && pwmDepth > 0.0f) {
+        voice.osc2.squareWave(voice.osc1, voice.period);
+    }
     
     Envelope& env = voice.env;
     env.attackMultiplier = envAttack;
@@ -441,8 +478,8 @@ void Synth::updateLFO()
         /* 4
          Use output value from the LFO to calculate a vibrato amount and assign this to the modulation property of the two oscillators
          */
-        float vibratoMod = 1.0f + sine * vibrato; // 0.2f;
-        float pwm = 1.0f + sine * pwmDepth;
+        float vibratoMod = 1.0f + sine * (modWheel + vibrato); // 0.2f;
+        float pwm = 1.0f + sine * (modWheel + pwmDepth);
         
         for (int v = 0; v < MAX_VOICES; ++v) {
             Voice& voice = voices[v];
