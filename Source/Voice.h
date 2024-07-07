@@ -26,6 +26,7 @@ struct Voice // produce the next output sample for a given note
     float panLeft, panRight;
     
     float target;
+    float glideRate;
 
     void reset() // also for initialization
     {
@@ -67,5 +68,10 @@ struct Voice // produce the next output sample for a given note
         float panning = std::clamp((note - 60.0f) / 24.0f, -1.0f, 1.0f); // TO-DO: CHANGE THIS TO A PLUGIN PARAMETER
         panLeft = std::sin(PI_OVER_4 * (1.0f - panning));
         panRight = std::sin(PI_OVER_4 * (1.0f + panning));
+    }
+    
+    void updateLFO()
+    {
+        period += glideRate * (target - period);
     }
 };

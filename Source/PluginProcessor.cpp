@@ -182,6 +182,7 @@ void My_JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBloc
     synth.allocateResources(sampleRate, samplesPerBlock); // lets Synth object react to changes in sample rate or maximum block size
     parametersChanged.store(true);
     reset();
+    DBG("Hello from prepare to play!");
 }
 
 void My_JX11AudioProcessor::releaseResources()
@@ -417,6 +418,18 @@ void My_JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t dat
     // snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
     // DBG(s);
     synth.midiMessage(data0, data1, data2); // passes midi message to the Synth class
+    
+    // Control Change
+    if ((data0 & 0xF0) == 0xB0) { // MIDI CC 0x07 represents master volume on a generic midi controller
+        DBG(data1); // Master Volume may not be 0x07, this will print what control message comes in
+        if (data1 == 0x07) {
+            float volumeCtl = float(data2);
+            // DBG(volumeCtl);
+            outputLevelParam->beginChangeGesture();
+            outputLevelParam->setValueNotifyingHost(volumeCtl);
+            outputLevelParam->endChangeGesture();
+        }
+    }
 }
 
 void My_JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)

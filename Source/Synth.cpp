@@ -63,6 +63,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if (voice.env.isActive()) {
             voice.osc1.period = voice.period * pitchBend;
             voice.osc2.period = voice.osc1.period * detune;
+            voice.glideRate = glideRate;
         }
     }
 
@@ -201,22 +202,25 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
      */
     int noteDistance = 0;
     if (lastNote > 0) {
-        noteDistance = note - lastNote;
+        if ((glideMode == 2) || ((glideMode == 1) && isPlayingLegatoStyle())) {
+            noteDistance = note - lastNote;
+        }
     }
     
     /*
-     Set voice.erpiod to the period to glide from
+     Set voice.period to the period to glide from
      necessary because in polyphony mode, the voice may not have the period of the most recent note that was played, if that note was handled by another voice
      */
     voice.period = period * std::pow(1.059463094359f, float(noteDistance) - glideBend);
     
     /*
-     4
+     Make sure the starting period does not become to small
+     We did something similar in calcPeriod
      */
     if (voice.period < 6.0f) { voice.period = 6.0f; }
     
     /*
-     5
+     Assign new note number to voice.note, but also to lastNote
      */
     lastNote = note;
     voice.note = note;
@@ -257,26 +261,12 @@ void Synth::noteOn(int note, int velocity) // registers the note number and velo
     */
     
     if(numVoices == 1) { // monophonic
-        DBG("Synth::noteOn where numVoices == 1");
         if (voices[0].note > 0) { // legato-style playing
             shiftQueuedNotes();
             restartMonoVoice(note, velocity);
             return;
         }
     }
-    
-    
-    // TESTING START
-    if(numVoices == 2) {
-        DBG("Synth::noteOn where numVoices == 2");
-    }
-    if(numVoices == 3) {
-        DBG("Synth::noteOn where numVoices == 3");
-    }
-    if(numVoices == 4) {
-        DBG("Synth::noteOn where numVoices == 4");
-    }
-    // TESTING END
     
     else { // polyphonic
         v = findFreeVoice();
@@ -413,7 +403,7 @@ int Synth::findFreeVoice() const
      - first try to steal notes that have been released already
      - if the same note was already playing, re-use that voice
      
-     
+     - 07/07/2024 - we want to make a paraphonic synth
      */
     
 }
@@ -423,7 +413,10 @@ void Synth::restartMonoVoice(int note, int velocity)
     float period = calcPeriod(0, note);
     
     Voice& voice = voices[0];
-    voice.period = period;
+    // voice.period = period;
+    voice.target = period;
+    
+    if (glideMode == 0) { voice.period = period; }
     
     voice.env.level += SILENCE + SILENCE;
     voice.note = note;
@@ -487,7 +480,19 @@ void Synth::updateLFO()
                 voice.osc1.modulation = vibratoMod;
                 // voice.osc2.modulation = vibratoMod;
                 voice.osc2.modulation = pwm;
+                
+                voice.updateLFO();
+                updatePeriod(voice);
             }
         }
     }
+}
+
+bool Synth::isPlayingLegatoStyle() const
+{
+    int held = 0;
+    for (int i = 0; i < MAX_VOICES; ++i) {
+        if (voices[i].note > 0) { held += 1; }
+    }
+    return held > 0;
 }

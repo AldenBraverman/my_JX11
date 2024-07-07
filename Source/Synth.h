@@ -83,4 +83,12 @@ private:
     float modWheel;
     
     int lastNote;
+    
+    inline void updatePeriod(Voice& voice)
+    {
+        voice.osc1.period = voice.period * pitchBend;
+        voice.osc2.period = voice.osc1.period * detune;
+    }
+    
+    bool isPlayingLegatoStyle() const;
 };
