@@ -286,8 +286,6 @@ void My_JX11AudioProcessor::update()
     
     synth.oscMix = oscMixParam->get() / 100.0f;
     
-    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
-    
     // synth.outputLevel = juce::Decibels::decibelsToGain(outputLevelParam->get());
     synth.outputLevelSmoother.setTargetValue(
                                              juce::Decibels::decibelsToGain(outputLevelParam->get())
@@ -305,6 +303,13 @@ void My_JX11AudioProcessor::update()
     synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi);
     
     synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES; // Index = 0 = Mono, Index = 1 = Poly
+    
+    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    
+    float filterReso = filterResoParam->get() / 100.0f;
+    synth.filterQ = std::exp(3.0f * filterReso);
+    
+    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback

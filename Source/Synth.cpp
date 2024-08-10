@@ -22,6 +22,10 @@ Synth::Synth()
 void Synth::allocateResources(double sampleRate_, int /* samplesPerBlock*/)
 {
     sampleRate = static_cast<float>(sampleRate_);
+    
+    for (int v = 0; v < MAX_VOICES; ++v) {
+        voices[v].filter.sampleRate = sampleRate;
+    }
 }
 
 void Synth::deallocateResources()
@@ -61,9 +65,11 @@ void Synth::render(float** outputBuffers, int sampleCount)
     for (int v = 0; v < MAX_VOICES; ++v) {
         Voice& voice = voices[v];
         if (voice.env.isActive()) {
-            voice.osc1.period = voice.period * pitchBend;
-            voice.osc2.period = voice.osc1.period * detune;
+            updatePeriod(voice);
+            // voice.osc1.period = voice.period * pitchBend;
+            // voice.osc2.period = voice.osc1.period * detune;
             voice.glideRate = glideRate;
+            voice.filterQ = filterQ;
         }
     }
 
@@ -90,12 +96,13 @@ void Synth::render(float** outputBuffers, int sampleCount)
                 float output = voice.render(noise);
                 outputLeft += output * voice.panLeft;
                 outputRight += output * voice.panRight;
-                
-                float outputLevel = outputLevelSmoother.getNextValue();
-                outputLeft *= outputLevel;
-                outputRight *= outputLevel;
             }
         }
+        
+        // Moved out of active voices loop
+        float outputLevel = outputLevelSmoother.getNextValue();
+        outputLeft *= outputLevel;
+        outputRight *= outputLevel;
         
         /*
         if (voice.env.isActive()) { // originally was voice.note > 0
@@ -125,6 +132,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         Voice& voice = voices[v];
         if (!voice.env.isActive()) {
             voice.env.reset();
+            voice.filter.reset();
         }
     }
     
@@ -196,6 +204,10 @@ void Synth::startVoice(int v, int note, int velocity) // copy of noteOn method f
     Voice& voice = voices[v]; // new line from noteOn
     // voice.period = period;
     voice.target = period; // for glide
+    voice.cutoff = sampleRate / (period * PI);
+    if (velocity > 0) {
+        voice.cutoff *= std::exp(velocitySensitivity * float(velocity - 64));
+    }
     
     /*
      Find how far away the new note is in semitones
@@ -473,6 +485,7 @@ void Synth::updateLFO()
          */
         float vibratoMod = 1.0f + sine * (modWheel + vibrato); // 0.2f;
         float pwm = 1.0f + sine * (modWheel + pwmDepth);
+        float filterMod = filterKeyTracking;
         
         for (int v = 0; v < MAX_VOICES; ++v) {
             Voice& voice = voices[v];
@@ -480,7 +493,7 @@ void Synth::updateLFO()
                 voice.osc1.modulation = vibratoMod;
                 // voice.osc2.modulation = vibratoMod;
                 voice.osc2.modulation = pwm;
-                
+                voice.filterMod = filterMod;
                 voice.updateLFO();
                 updatePeriod(voice);
             }

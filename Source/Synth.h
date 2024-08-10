@@ -61,6 +61,11 @@ public:
     int glideMode;
     float glideRate;
     float glideBend;
+    
+    float filterKeyTracking;
+    
+    float filterQ;
+    
 private:
     float sampleRate;
     // Voice voice; // Set up Voice class // this is just one voice for monophonic

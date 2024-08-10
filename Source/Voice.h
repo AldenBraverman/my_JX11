@@ -11,6 +11,7 @@
 #pragma once
 #include "Oscillator.h"
 #include "Envelope.h"
+#include "Filter.h"
 
 struct Voice // produce the next output sample for a given note
 {
@@ -20,6 +21,8 @@ struct Voice // produce the next output sample for a given note
     Oscillator osc2; // second oscillator for combining oscillators
     float saw; // "add new variable to the struct"
     Envelope env;
+    Filter filter;
+    float cutoff; // for filter cutoff keytracking
 
     float period; // "add new property to the Voice struct"
     
@@ -27,6 +30,10 @@ struct Voice // produce the next output sample for a given note
     
     float target;
     float glideRate;
+    
+    float filterMod;
+    
+    float filterQ;
 
     void reset() // also for initialization
     {
@@ -40,6 +47,7 @@ struct Voice // produce the next output sample for a given note
         
         panLeft = 0.707f;
         panRight = 0.707f;
+        filter.reset();
     }
 
     float render(float input)
@@ -52,6 +60,9 @@ struct Voice // produce the next output sample for a given note
         // saw = saw * 0.997f - sample; // ramp down sawtooth
         
         float output = saw + input; // input is the noise signal
+        
+        output = filter.render(output);
+        
         float envelope = env.nextValue();
         return output * envelope;
         
@@ -73,5 +84,10 @@ struct Voice // produce the next output sample for a given note
     void updateLFO()
     {
         period += glideRate * (target - period);
+        
+        float modulatedCutoff = cutoff * std::exp(filterMod);
+        modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
+        filter.updateCoefficients(modulatedCutoff, filterQ);
+        // filter.updateCoefficients(cutoff, 0.707f); // 0.707 = sqrt(1/2), no resonance for the Q factor
     }
 };
