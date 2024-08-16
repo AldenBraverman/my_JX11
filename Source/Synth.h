@@ -96,4 +96,6 @@ private:
     }
     
     bool isPlayingLegatoStyle() const;
+    
+    float resonanceCtl;
 };

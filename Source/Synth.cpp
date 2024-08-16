@@ -50,6 +50,8 @@ void Synth::reset()
     modWheel = 0.0f;
     
     lastNote = 0;
+    
+    resonanceCtl = 1.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -69,7 +71,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
             // voice.osc1.period = voice.period * pitchBend;
             // voice.osc2.period = voice.osc1.period * detune;
             voice.glideRate = glideRate;
-            voice.filterQ = filterQ;
+            voice.filterQ = filterQ * resonanceCtl;
         }
     }
 
@@ -388,6 +390,10 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
             if (!sustainPedalPressed) { 
                 noteOff(SUSTAIN);
             }
+            break;
+        // Resonance
+        case 0x47 :
+            resonanceCtl = 154.0f / float(154 - data2);
             break;
     }
 }

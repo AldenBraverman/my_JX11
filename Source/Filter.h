@@ -39,7 +39,7 @@ public:
     float render(float x)
     {
         float v3 = x - ic2eq;
-        float v1 = a1 * ic1eq + ac2 * v3;
+        float v1 = a1 * ic1eq + a2 * v3;
         float v2 = ic2eq + a2 * ic1eq + a3 * v3;
         ic1eq = 2.0f * v1 - ic1eq;
         ic2eq = 2.0f * v2 - ic2eq;
@@ -50,4 +50,4 @@ private:
     const float PI = 3.1415926535897932f;
     float g, k, a1, a2, a3; // filter coefficients
     float ic1eq, ic2eq; // internal state
-}
+};

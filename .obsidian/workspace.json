@@ -11,17 +11,13 @@
             "id": "48f084a2b3d7bfe2",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "canvas",
               "state": {
-                "file": "Untitled Kanban.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
+                "file": "Obsidian Notes/JUCE noise gen to Cmajor code map.canvas",
+                "viewState": {
+                  "x": 2586.5,
+                  "y": 2633.5,
+                  "zoom": -2.7522621941631726
                 }
               }
             }
@@ -76,7 +72,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 206.5
   },
   "right": {
     "id": "2c7a3403e0a0c01f",
@@ -92,7 +88,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Untitled Kanban.md",
+                "file": "Obsidian Notes/JUCE noise gen to Cmajor code map.canvas",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -109,7 +105,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Untitled Kanban.md",
+                "file": "Obsidian Notes/JUCE noise gen to Cmajor code map.canvas",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -132,7 +128,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Untitled Kanban.md"
+                "file": "Obsidian Notes/JUCE noise gen to Cmajor code map.canvas"
               }
             }
           }
@@ -154,10 +150,10 @@
       "obsidian-kanban:Create new board": false
     }
   },
-  "active": "48f084a2b3d7bfe2",
+  "active": "bb34622a9c990f0a",
   "lastOpenFiles": [
-    "Obsidian Notes/Code Map.canvas",
     "Untitled Kanban.md",
+    "Obsidian Notes/JUCE noise gen to Cmajor code map.canvas",
     "my_JX11.md",
     "Cmajor/MY_JX11/MY_JX11_old.cmajor",
     "Source/Synth~.cpp",
