@@ -310,6 +310,18 @@ void My_JX11AudioProcessor::update()
     synth.filterQ = std::exp(3.0f * filterReso);
     
     synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
+    
+    float filterLFO = filterLFOParam->get() / 100.0f;
+    synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
+    
+    synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterAttackParam->get()));
+    synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+    float filterSustain = filterSustainParam->get() / 100.0f;
+    synth.filterSustain = filterSustain * filterSustain;
+    synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
+    
+    synth.filterEnvDepth = 0.06f * filterEnvParam->get();
+    
 }
 
 void My_JX11AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages) // audio callback

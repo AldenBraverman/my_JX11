@@ -66,6 +66,11 @@ public:
     
     float filterQ;
     
+    float filterLFODepth;
+    
+    float filterAttack, filterDecay, filterSustain, filterRelease;
+    float filterEnvDepth;
+    
 private:
     float sampleRate;
     // Voice voice; // Set up Voice class // this is just one voice for monophonic
@@ -98,4 +103,10 @@ private:
     bool isPlayingLegatoStyle() const;
     
     float resonanceCtl;
+    
+    float pressure;
+    
+    float filterCtl;
+    
+    float filterZip;
 };

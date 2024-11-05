@@ -34,6 +34,11 @@ struct Voice // produce the next output sample for a given note
     float filterMod;
     
     float filterQ;
+    
+    float pitchBend;
+    
+    Envelope filterEnv;
+    float filterEnvDepth;
 
     void reset() // also for initialization
     {
@@ -47,7 +52,9 @@ struct Voice // produce the next output sample for a given note
         
         panLeft = 0.707f;
         panRight = 0.707f;
+        
         filter.reset();
+        filterEnv.reset();
     }
 
     float render(float input)
@@ -71,7 +78,8 @@ struct Voice // produce the next output sample for a given note
     
     void release()
     {
-        env.release(); // pass equest to the envelope
+        env.release(); // pass request to the envelope
+        filterEnv.release();
     }
     
     void updatePanning() // nice crossover for panning
@@ -85,7 +93,10 @@ struct Voice // produce the next output sample for a given note
     {
         period += glideRate * (target - period);
         
-        float modulatedCutoff = cutoff * std::exp(filterMod);
+        float fenv = filterEnv.nextValue();
+        
+        float modulatedCutoff = cutoff * std::exp(filterMod + filterEnvDepth * fenv) / pitchBend;
+        
         modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
         filter.updateCoefficients(modulatedCutoff, filterQ);
         // filter.updateCoefficients(cutoff, 0.707f); // 0.707 = sqrt(1/2), no resonance for the Q factor
