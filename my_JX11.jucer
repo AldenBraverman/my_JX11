@@ -5,6 +5,10 @@
               companyName="Alden Braverman" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="jj8tt0" name="my_JX11">
     <GROUP id="{BF4D85F3-1572-11C7-2AA3-98CF9C1ED3E0}" name="Source">
+      <FILE id="SNOVWi" name="LookAndFeel.cpp" compile="1" resource="0" file="Source/LookAndFeel.cpp"/>
+      <FILE id="t6N0tP" name="LookAndFeel.h" compile="0" resource="0" file="Source/LookAndFeel.h"/>
+      <FILE id="npVopi" name="RotaryKnob.cpp" compile="1" resource="0" file="Source/RotaryKnob.cpp"/>
+      <FILE id="dutINq" name="RotaryKnob.h" compile="0" resource="0" file="Source/RotaryKnob.h"/>
       <FILE id="JHCNMw" name="Envelope.h" compile="0" resource="0" file="Source/Envelope.h"/>
       <FILE id="GmBtTm" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="MAxqAT" name="Preset.h" compile="0" resource="0" file="Source/Preset.h"/>
